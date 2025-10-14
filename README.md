@@ -26,6 +26,18 @@ This setup creates a **local Wi-Fi Access Point** — no router or internet requ
 
 ---
 
+## 📈 **Performance Comparison**
+
+| Feature | This Project | Garmin Edge 130 ($200) | Wahoo ELEMNT ($250) |
+|---------|-------------|------------------------|---------------------|
+| **Price** | **$<10** | $200 | $250 |
+| **Real-time graphs** | **✅ 4 timeframes** | ❌ | Basic |
+| **Custom firmware** | **✅ Full access** | ❌ | ❌ |
+| **Battery life** | **Days (power bank)** | 15 hours | 17 hours |
+| **Accuracy** | **Hall sensor precision** | GPS (±3m error) | GPS (±3m error) |
+| **Customization** | **Unlimited** | Limited | Limited |
+
+---
 ## ⚙️ Pin Connections
 
 | Sensor | ESP32 Pin | Notes |
@@ -56,3 +68,20 @@ This setup creates a **local Wi-Fi Access Point** — no router or internet requ
   Set upload speed to 115200
 
 5.Upload the code.
+
+
+## 🌍 **Open Source Impact**
+
+### 🎯 **Why This Matters**
+- **Democratizes Technology**: High-end bike computer features for everyone
+- **Educational Value**: Perfect Arduino project for learning embedded systems
+- **Customizable**: Full source code means infinite possibilities
+- **Community Driven**: Your contributions make it better for everyone
+
+### 🤝 **Contributing**
+We welcome contributions! Whether it's:
+- 🐛 Bug fixes
+- ✨ New features  
+- 📚 Documentation improvements
+- 🧪 Testing on different hardware
+- 🎨 UI enhancements
