@@ -5,29 +5,16 @@
 #include <Adafruit_Sensor.h>
 #include <math.h>
 
-// --- REPLACE WITH YOUR WIFI CREDENTIALS ---
-const char* ssid = "YOUR_WIFI_SSID";
-const char* password = "YOUR_WIFI_PASSWORD";
-// -----------------------------------------
-
-// Web Server on port 80
 WebServer server(80);
-
-// MPU6050 Sensor object
 Adafruit_MPU6050 mpu;
 
-// Hall Effect Sensor Pin
-const int hallPin = 2; // A3144 is on GPIO2
+// Hall Sensor
+const int hallPin = 2;
 
-// Global variables to hold the latest sensor data
-float pitch = 0.0;
-float roll = 0.0;
+// Sensor values
+float pitch = 0.0, roll = 0.0, accelX = 0.0, accelY = 0.0, accelZ = 0.0;
 String magnetState = "No";
-float accelX = 0.0;
-float accelY = 0.0;
-float accelZ = 0.0;
 
-// Function to handle the root webpage
 void handleRoot() {
   String html = R"rawliteral(
 <!DOCTYPE html>
@@ -96,66 +83,52 @@ setInterval(function() {
   server.send(200, "text/html", html);
 }
 
-// Function to send sensor data
 void handleData() {
-  // Create a comma-separated string with all the sensor data
-  String data = String(pitch, 2) + "," + String(roll, 2) + "," + magnetState + "," + String(accelX, 2) + "," + String(accelY, 2) + "," + String(accelZ, 2);
+  String data = String(pitch, 2) + "," + String(roll, 2) + "," + magnetState +
+                "," + String(accelX, 2) + "," + String(accelY, 2) + "," + String(accelZ, 2);
   server.send(200, "text/plain", data);
 }
 
 void setup() {
   Serial.begin(115200);
-  
-  // Initialize Hall Sensor
   pinMode(hallPin, INPUT_PULLUP);
 
   // Initialize MPU6050
   if (!mpu.begin()) {
-    Serial.println("Failed to find MPU6050 chip");
-    while (1) { delay(10); }
+    Serial.println("MPU6050 not found");
+    while (1) delay(10);
   }
   mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
   mpu.setGyroRange(MPU6050_RANGE_500_DEG);
   mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
 
-  // Connect to Wi-Fi
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-  }
-  Serial.println("\nWiFi connected!");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  // --- Wi-Fi Access Point Mode ---
+  const char* ap_ssid = "BikeModule";
+  const char* ap_password = "12345678";
+  WiFi.softAP(ap_ssid, ap_password);
+  IPAddress IP = WiFi.softAPIP();
+  Serial.print("Access Point IP: ");
+  Serial.println(IP);
+  Serial.println("Connect your phone to Wi-Fi: BikeModule (password: 12345678)");
+  Serial.println("Then open http://192.168.4.1 in a browser.");
 
-  // Setup Web Server
+  // Start server
   server.on("/", handleRoot);
   server.on("/data", handleData);
   server.begin();
-  Serial.println("HTTP server started.");
+  Serial.println("HTTP server started");
 }
 
 void loop() {
-  // Read MPU6050
   sensors_event_t a, g, temp;
   mpu.getEvent(&a, &g, &temp);
-  
-  // Update all the global variables
+
   accelX = a.acceleration.x;
   accelY = a.acceleration.y;
   accelZ = a.acceleration.z;
   pitch = atan2(accelY, accelZ) * 180 / PI;
   roll = atan2(-accelX, accelZ) * 180 / PI;
+  magnetState = (digitalRead(hallPin) == LOW) ? "Yes" : "No";
 
-  // Read Hall Effect Sensor
-  if (digitalRead(hallPin) == LOW) {
-    magnetState = "Yes!";
-  } else {
-    magnetState = "No";
-  }
-
-  // Handle web server requests
   server.handleClient();
 }
