@@ -54,7 +54,7 @@ This setup creates a **local Wi-Fi Access Point** — no router or internet requ
 
 1. **Clone this repository**
    ```bash
-   git clone https://github.com/<yourusername>/esp32-bike-module.git
+   git clone https://github.com/azhhhyyy/ESP32-Bike-Computer-Cycada
    cd esp32-bike-module
 2. Open the .ino file in the Arduino IDE or PlatformIO.
 
